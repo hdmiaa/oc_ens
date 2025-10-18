@@ -1,0 +1,51 @@
+; ==========================================================
+; section .data
+; Esta sección se usa para declarar variables inicializadas
+; (datos que tu programa conoce antes de empezar).
+; ==========================================================
+section .data
+    ; Declaramos dos variables 'valor1' y 'valor2'
+    valor1 dd 10     ; dd = define doubleword (32 bits), inicializado en 10
+    valor2 dd 20     ; dd = define doubleword (32 bits), inicializado en 20
+
+    ; Cadenas de texto para imprimir mensajes
+    msg_mayor db "El segundo valor es mayor", 0ah ; db = define byte, 0ah = salto de línea
+    msg_igual db "Los valores son iguales", 0ah
+
+; ==========================================================
+; section .text
+; Esta sección contiene el código ejecutable (las instrucciones).
+; ==========================================================
+section .text
+    global _start  ; Hacemos la etiqueta '_start' visible para el enlazador
+
+_start:
+    ; 1. Cargar los valores de la memoria a los registros
+    mov eax, [valor1] ; Carga el valor 10 en EAX
+    mov ebx, [valor2] ; Carga el valor 20 en EBX
+
+    ; 2. Comparar los dos valores
+    cmp eax, ebx      ; Compara EAX con EBX (hace EAX - EBX)
+                      ; Como 10 - 20 no es cero, la Zero Flag (ZF) se pone a 0.
+                      ; Como 10 < 20, la Sign Flag (SF) se activa.
+
+    ; 3. El Salto Condicional [cite: 83]
+    ; Usaremos 'je' (Jump if Equal)
+    je son_iguales    ; Salta a la etiqueta 'son_iguales' SI (if) EAX == EBX
+                      ; En este caso, no saltará porque 10 != 20.
+    
+    ; 4. Código si NO son iguales (el salto no se tomó)
+    ; (Aquí iría la lógica para imprimir msg_mayor, omitida por brevedad)
+    
+    jmp fin_programa  ; Salto incondicional para terminar
+
+son_iguales:
+    ; 5. Código si SÍ son iguales (el salto 'je' se tomó)
+    ; (Aquí iría la lógica para imprimir msg_igual, omitida por brevedad)
+
+fin_programa:
+    ; 6. Salir del programa limpiamente
+    ; (Lógica de salida estándar de Linux)
+    mov eax, 1        ; sys_exit (código de llamada al sistema para salir)
+    mov ebx, 0        ; Código de retorno 0 (sin error)
+    int 0x80          ; Llamar al kernel para ejecutar la salida
